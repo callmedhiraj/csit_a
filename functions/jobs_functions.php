@@ -7,7 +7,7 @@ function getAllJobs(){
 //connect to the database
 $link = connect_oracle();
 //prepare the sql
-$sql = "SELECT * FROM JOBS";
+$sql = "SELECT job_id, job_title, max_salary , min_salary  FROM JOBS";
 //parse the sql query
 $stmt = oci_parse($link, $sql) or die(oci_error($link));
 //execute the sql query
@@ -59,6 +59,38 @@ function addJob($JOB_ID, $JOB_TITLE, $MIN_SALARY, $MAX_SALARY){
     //return true/false
     if($resultSet){
         //success
+        return true;
+    }else{
+        return false;
+    }
+
+}//function ends
+/**
+ * A function to delete a particular job
+ * 
+ */
+function deleteJob($job_id){
+    //connect to the database
+$link = connect_oracle();
+    //prepare the sql
+$sql = "DELETE FROM JOBS WHERE JOB_ID  = :JOB_ID";
+
+    //parse the statement
+$stmt = oci_parse($link, $sql);
+    //create the bind data array
+$data = array(':JOB_ID'=>$job_id);
+
+    //bind by name
+foreach($data as $key=>$value){
+    oci_bind_by_name($stmt,$key,$data[$key]);
+}
+    //execute 
+$resultSet = oci_execute($stmt);
+    //close the database
+close_oracle($link);
+
+    //return statement
+    if($resultSet){
         return true;
     }else{
         return false;
